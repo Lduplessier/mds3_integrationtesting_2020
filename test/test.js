@@ -25,54 +25,42 @@ const getCurrentCulor = () => {
 }
 // <-- FIN
 
-describe('Color test API', function() {
-  beforeEach((done) => {
-    indexedDB.remove({}, () => {
-      done();
-    });
-  });
   // 1 
   it('Response should be 200 if color list returned', function(done) {
-    chai.request('http://localhost:8080')
+    chai.request(app)
     .get('/test')
     .end(function(err, res) {
       expect(res).to.have.status(200);
       res.should.be.json;
-      res.should.be.object;
-      res.should.be.array;
-      done();
+      (res.body).should.be.object;
+      (res.body.results).should.be.array;
     });
   });
   // 2
   it('Response should be 404 if path is invalid', function(done) {
-    chai.request(server)
-    .get('/index')
-    .end(function (err, res) {
-      expect(res).to.have.status(404);
-      done();
+    chai.request(app)
+    .get('/colors')
+    expect(err).to.have.status(404);
     });
-  });
   //3
   it('Response should be 201 if a new color is added', function(done) {
-    chai.request(server)
-    .send('/index')
+    chai.request(app)
+    .send('/colors')
     .end(function(err, res) {
       expect(res).to.have.status(201);
       res.should.be.json;
-      res.should.be.array;
-      done();
+      (res.body).should.be.object;
+      (res.body.results).should.be.an('array').to.include(getCurrentCulor());
     });
   });
   // 4
   it('Response should be 200 if color list is returned with the new ones', function(done) {
-    chai.request(server)
-    .get('/index')
+    chai.request(app)
+    .get('/colors')
     .end(function(err, res) {
       expect(res).to.have.status(200);
       res.should.be.json;
       res.should.be.object;
-      res.should.be.array;
-      done();
+      (res.body.results).should.be.an('array').to.include(getCurrentCulor());
+    });
   });
-});
-})
